@@ -18,7 +18,8 @@ bash <(curl https://raw.githubusercontent.com/H-Return/Port-Shifter/main/install
 # Usage
 The script provides a dialog-based interface for managing various services. Below are the available functions:
 
-### IPTables
+<details>
+<summary><b>IPTables</b></summary>
 1.Install IPTables:
 
 - Configures iptables rules for TCP and UDP ports.
@@ -31,8 +32,9 @@ The script provides a dialog-based interface for managing various services. Belo
 3.Uninstall IPTables:
 
 - Removes iptables rules and stops the service.
-
-### GOST
+</details>
+<details>
+<summary><b>GOST</b></summary>
 
 1.Install GOST:
 
@@ -50,7 +52,9 @@ The script provides a dialog-based interface for managing various services. Belo
 4.Uninstall GOST:
 
 - Stops and removes GOST service and binary.
-### Xray
+</details>
+<details>
+<summary><b>Xray</b></summary>
 
 1.Install Xray:
 
@@ -72,8 +76,9 @@ The script provides a dialog-based interface for managing various services. Belo
 5.Uninstall Xray:
 
 - Removes Xray configuration and uninstalls the service.
-
-### HAProxy
+</details>
+<details>
+<summary><b>HAProxy</b></summary>
 1.Install HAProxy:
 
 - Installs HAProxy and configures it based on user input.
@@ -85,7 +90,10 @@ The script provides a dialog-based interface for managing various services. Belo
 3.Uninstall HAProxy:
 
 - Stops and removes HAProxy service and configuration.
-### Options
+</details>
+
+<details>
+<summary><b>Options</b></summary>
 1.Configure DNS:
 
 - Updates DNS server settings.
@@ -93,7 +101,7 @@ The script provides a dialog-based interface for managing various services. Belo
 2.Update Server:
 
 - Updates the server's package list and installed packages.
-
+</details>
 
 ## Notes
 - Ensure you have a backup of your current iptables rules and configurations before running this script.
