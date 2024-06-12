@@ -20,6 +20,12 @@ if ! command -v jq &> /dev/null; then
     echo "Installing jq..."
     sudo apt install jq -y
 fi
+
+# Check if lsof is installed
+if ! command -v lsof &> /dev/null; then
+    echo "Installing lsof..."
+    sudo apt install lsof -y
+fi
 clear
 
 # Define partial functions
