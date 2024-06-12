@@ -60,15 +60,18 @@ The script provides a dialog-based interface for managing various services. Belo
 2.Check Xray Service:
 
 - Displays the current Xray ports and service status.
-- Add Another Inbound:
+
+3.Add Another Inbound:
+
 - Adds a new inbound configuration to Xray.
 
-3.Remove Inbound:
+4.Remove Inbound:
 
 - Removes an existing inbound configuration from Xray.
-- Uninstall Xray:
 
-4.Removes Xray configuration and uninstalls the service.
+5.Uninstall Xray:
+
+- Removes Xray configuration and uninstalls the service.
 
 ### HAProxy
 1.Install HAProxy:
