@@ -22,6 +22,9 @@ The script provides a dialog-based interface for managing various services. Belo
 
 <details>
 <summary><b>IPTables</b></summary>
+
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/a8b48e18-736a-4e2e-8877-a3bf0d79059d" width="600" height="400"></div><br>
+
 1.Install IPTables:
 
 - Configures iptables rules for TCP and UDP ports.
@@ -37,6 +40,8 @@ The script provides a dialog-based interface for managing various services. Belo
 </details>
 <details>
 <summary><b>GOST</b></summary>
+
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/d76a56c4-44b9-4445-857c-e8c10f1fe7ef" width="600" height="400"></div><br>
 
 1.Install GOST:
 
@@ -57,6 +62,8 @@ The script provides a dialog-based interface for managing various services. Belo
 </details>
 <details>
 <summary><b>Xray</b></summary>
+
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/95258975-7792-4178-a83f-876497f3d8a2" width="600" height="400"></div><br>
 
 1.Install Xray:
 
@@ -81,6 +88,9 @@ The script provides a dialog-based interface for managing various services. Belo
 </details>
 <details>
 <summary><b>HAProxy</b></summary>
+
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/fdad23d7-6d0f-446f-867a-bf7df51a57fe" width="600" height="400"></div><br>
+  
 1.Install HAProxy:
 
 - Installs HAProxy and configures it based on user input.
@@ -96,6 +106,9 @@ The script provides a dialog-based interface for managing various services. Belo
 
 <details>
 <summary><b>Options</b></summary>
+
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/52165edf-71df-4fbb-904c-c8fdf566c374" width="600" height="400"></div><br>
+  
 1.Configure DNS:
 
 - Updates DNS server settings.
