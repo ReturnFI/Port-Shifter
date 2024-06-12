@@ -104,7 +104,7 @@ install_gost() {
     echo "80"
     sudo chmod +x /usr/local/bin/gost
     echo "90"
-    sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/H-Return/Port-Shifter/main/gost.service
+    sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service
     sleep 1
     } | dialog --title "GOST Installation" --gauge "Installing GOST..." 10 60
     
@@ -203,7 +203,7 @@ install_xray() {
             whiptail --title "Invalid Input" --msgbox "Port must be a numeric value between 1 and 65535. Please try again." 8 60
         fi
     done
-    wget -O /tmp/config.json https://raw.githubusercontent.com/H-Return/Port-Shifter/main/config.json > /dev/null 2>&1
+    wget -O /tmp/config.json https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/config.json > /dev/null 2>&1
     clear
     jq --arg address "$address" --arg port "$port" '.inbounds[1].port = ($port | tonumber) | .inbounds[1].settings.address = $address | .inbounds[1].settings.port = ($port | tonumber) | .inbounds[1].tag = "inbound-" + $port' /tmp/config.json > /usr/local/etc/xray/config.json
 
@@ -316,7 +316,7 @@ install_haproxy() {
         sudo apt-get install haproxy -y > /dev/null 2>&1
         sleep 1
         echo "30" "Downloading haproxy.cfg..."
-        wget -q -O /tmp/haproxy.cfg "https://raw.githubusercontent.com/H-Return/Port-Shifter/main/haproxy.cfg" > /dev/null 2>&1
+        wget -q -O /tmp/haproxy.cfg "https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/haproxy.cfg" > /dev/null 2>&1
         sleep 1
         echo "50" "Removing existing haproxy.cfg..."
         sudo rm /etc/haproxy/haproxy.cfg > /dev/null 2>&1
