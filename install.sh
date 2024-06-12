@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Update without showing any message
+# Update and Upgrade Server
 clear
 echo "Please be patient while the server updates...."
 sudo apt update && apt upgrade -y
