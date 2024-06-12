@@ -2,8 +2,7 @@
 
 Port Shifter is a script designed to manage iptables, GOST, Xray, and HAProxy installations on a Linux server. It provides an easy-to-use interface for setting up these services, checking their status, and uninstalling them.
 
-<div style="text-align:center;"><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/e94952f8-f85b-4241-83b9-a2e9b7958b8b" width="600" height="300"></div>
-
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/e94952f8-f85b-4241-83b9-a2e9b7958b8b" width="600" height="300"></div>
 
 ## Features
 - IPTables: Configure iptables rules for TCP and UDP ports.
