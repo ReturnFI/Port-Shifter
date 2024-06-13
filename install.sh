@@ -99,11 +99,11 @@ uninstall_iptables() {
 install_gost() {
     {
         echo "10"
-        curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh | bash -s -- --install
-        sleep 2
+        curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh | bash -s -- --install > /dev/null 2>&1
         echo "50"
-        sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service
+        sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service > /dev/null 2>&1
         sleep 1
+        echo "70"
     } | dialog --title "GOST Installation" --gauge "Installing GOST..." 10 60
 
     domain=$(whiptail --inputbox "Enter your domain or IP:" 8 60 --title "GOST Installation" 3>&1 1>&2 2>&3)
@@ -116,10 +116,16 @@ install_gost() {
         fi
     done
 
-    sudo sed -i "s|ExecStart=/usr/local/bin/gost -L=tcp://:\$port/\$domain:\$port|ExecStart=/usr/local/bin/gost -L=tcp://:$port/$domain:$port|g" /usr/lib/systemd/system/gost.service > /dev/null 2>&1
-    sudo systemctl daemon-reload
-    sudo systemctl start gost > /dev/null 2>&1
-    sudo systemctl enable gost > /dev/null 2>&1
+    {
+        echo "80"
+        sudo sed -i "s|ExecStart=/usr/local/bin/gost -L=tcp://:\$port/\$domain:\$port|ExecStart=/usr/local/bin/gost -L=tcp://:$port/$domain:$port|g" /usr/lib/systemd/system/gost.service > /dev/null 2>&1
+        sudo systemctl daemon-reload > /dev/null 2>&1
+        sudo systemctl start gost > /dev/null 2>&1
+        sudo systemctl enable gost > /dev/null 2>&1
+        echo "100"
+        sleep 1
+    } | dialog --title "GOST Configuration" --gauge "Configuring GOST service..." 10 60
+
     status=$(sudo systemctl is-active gost)
 
     if [ "$status" = "active" ]; then
