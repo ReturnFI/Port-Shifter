@@ -98,26 +98,18 @@ uninstall_iptables() {
 ## Functions for GOST setup
 install_gost() {
     {
-    echo "20"
-    wget -q https://github.com/ginuerzh/gost/releases/download/v2.11.5/gost-linux-amd64-2.11.5.gz
-    sleep 1
-    echo "40"
-    gunzip -q gost-linux-amd64-2.11.5.gz
-    sleep 1
-    echo "60"
-    sudo mv gost-linux-amd64-2.11.5 /usr/local/bin/gost
-    sleep 1
-    echo "80"
-    sudo chmod +x /usr/local/bin/gost
-    echo "90"
-    sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service
-    sleep 1
+        echo "10"
+        curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh | bash -s -- --install
+        sleep 2
+        echo "50"
+        sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service
+        sleep 1
     } | dialog --title "GOST Installation" --gauge "Installing GOST..." 10 60
-    
-    domain=$(whiptail --inputbox "Enter your domain or IP:" 8 60  --title "GOST Installation" 3>&1 1>&2 2>&3)
+
+    domain=$(whiptail --inputbox "Enter your domain or IP:" 8 60 --title "GOST Installation" 3>&1 1>&2 2>&3)
     while : ; do
         port=$(whiptail --inputbox "Enter the port number (1-65535):" 8 60 --title "Port Input" 3>&1 1>&2 2>&3)
-        if [[ "$port" =~ ^[0-9]+$ && "$port" -ge 0 && "$port" -le 65535 ]]; then
+        if [[ "$port" =~ ^[0-9]+$ && "$port" -ge 1 && "$port" -le 65535 ]]; then
             break
         else
             whiptail --title "Invalid Input" --msgbox "Port must be a numeric value between 1 and 65535. Please try again." 8 60
@@ -125,14 +117,15 @@ install_gost() {
     done
 
     sudo sed -i "s|ExecStart=/usr/local/bin/gost -L=tcp://:\$port/\$domain:\$port|ExecStart=/usr/local/bin/gost -L=tcp://:$port/$domain:$port|g" /usr/lib/systemd/system/gost.service > /dev/null 2>&1
+    sudo systemctl daemon-reload
     sudo systemctl start gost > /dev/null 2>&1
     sudo systemctl enable gost > /dev/null 2>&1
     status=$(sudo systemctl is-active gost)
 
     if [ "$status" = "active" ]; then
-        whiptail --title "GOST Service Status" --msgbox "Gost tunnel is installed and $status." 8 60
+        whiptail --title "GOST Service Status" --msgbox "GOST tunnel is installed and active." 8 60
     else
-        whiptail --title "GOST Installation" --msgbox "GOST service is not active or $status." 8 60
+        whiptail --title "GOST Installation" --msgbox "GOST service is not active. Status: $status." 8 60
     fi
     clear
 }
