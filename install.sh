@@ -1,31 +1,40 @@
 #!/bin/bash
 
+if [ -f /etc/redhat-release ]; then
+    OS="CentOS"
+    PACKAGE_MANAGER="yum"
+    SERVICE_MANAGER="systemctl"
+elif [ -f /etc/lsb-release ]; then
+    OS="Ubuntu"
+    PACKAGE_MANAGER="apt"
+    SERVICE_MANAGER="systemctl"
+else
+    echo "Unsupported OS"
+    exit 1
+fi
+
 # Update and Upgrade Server
-sudo apt update && apt upgrade -y
-
-# Check if dialog is installed
-if ! command -v dialog &> /dev/null; then
-    echo "Installing dialog..."
-    sudo apt install dialog -y
+if [ "$OS" = "Ubuntu" ]; then
+    sudo apt update && sudo apt upgrade -y
+else
+    sudo yum update -y
 fi
 
-# Check if whiptail is installed
-if ! command -v whiptail &> /dev/null; then
-    echo "Installing whiptail..."
-    sudo apt install whiptail -y
-fi
+# Install necessary packages
+install_package() {
+    package=$1
+    if ! command -v $package &> /dev/null; then
+        echo "Installing $package..."
+        sudo $PACKAGE_MANAGER install $package -y > /dev/null
+    fi
+}
 
-# Check if jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "Installing jq..."
-    sudo apt install jq -y
-fi
-
-# Check if lsof is installed
-if ! command -v lsof &> /dev/null; then
-    echo "Installing lsof..."
-    sudo apt install lsof -y
-fi
+install_package dialog
+install_package whiptail
+install_package jq
+install_package lsof
+install_package tar 
+install_package wget
 clear
 
 # Define partial functions
@@ -37,7 +46,7 @@ install_iptables() {
 
     {
         echo "10" "Installing iptables..."
-        sudo apt install iptables -y > /dev/null 2>&1
+        sudo $PACKAGE_MANAGER install iptables -y > /dev/null 2>&1
         echo "30" "Enabling net.ipv4.ip_forward..."
         sudo sysctl net.ipv4.ip_forward=1 > /dev/null 2>&1
         echo "50" "Configuring iptables rules for TCP..."
@@ -318,7 +327,7 @@ uninstall_xray() {
 install_haproxy() {
     {
         echo "10" "Installing HAProxy..."
-        sudo apt-get install haproxy -y > /dev/null 2>&1
+        sudo $PACKAGE_MANAGER install haproxy -y > /dev/null 2>&1
         sleep 1
         echo "30" "Downloading haproxy.cfg..."
         wget -q -O /tmp/haproxy.cfg "https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/haproxy.cfg" > /dev/null 2>&1
@@ -385,7 +394,7 @@ uninstall_haproxy() {
         sudo systemctl disable haproxy > /dev/null 2>&1
         sleep 1
         echo "60" "Removing HAProxy..."
-        sudo apt-get remove --purge haproxy -y > /dev/null 2>&1
+        sudo $PACKAGE_MANAGER remove haproxy -y > /dev/null 2>&1
         sleep 1
     } | dialog --title "HAProxy Uninstallation" --gauge "Uninstalling HAProxy..." 10 60 0
 
@@ -410,7 +419,7 @@ function configure_dns() {
 
 function update_server() {
     (
-        sudo apt-get update -y
+        sudo $PACKAGE_MANAGER update -y
         echo "100" "Update completed."
     ) | dialog --title "Update Server" --progressbox 30 120
 
