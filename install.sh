@@ -1,23 +1,53 @@
 #!/bin/bash
 
+# Detect OS and set package/service managers
 if [ -f /etc/redhat-release ]; then
-    OS="CentOS"
-    PACKAGE_MANAGER="yum"
-    SERVICE_MANAGER="systemctl"
-elif [ -f /etc/lsb-release ]; then
-    OS="Ubuntu"
-    PACKAGE_MANAGER="apt"
-    SERVICE_MANAGER="systemctl"
+    if grep -q "Rocky" /etc/redhat-release; then
+        OS="Rocky"
+        PACKAGE_MANAGER="dnf"
+        SERVICE_MANAGER="systemctl"
+    elif grep -q "AlmaLinux" /etc/redhat-release; then
+        OS="AlmaLinux"
+        PACKAGE_MANAGER="dnf"
+        SERVICE_MANAGER="systemctl"
+    else
+        OS="CentOS"
+        PACKAGE_MANAGER="yum"
+        SERVICE_MANAGER="systemctl"
+    fi
+elif [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        ubuntu)
+            OS="Ubuntu"
+            PACKAGE_MANAGER="apt"
+            SERVICE_MANAGER="systemctl"
+            ;;
+        debian)
+            OS="Debian"
+            PACKAGE_MANAGER="apt"
+            SERVICE_MANAGER="systemctl"
+            ;;
+        fedora)
+            OS="Fedora"
+            PACKAGE_MANAGER="dnf"
+            SERVICE_MANAGER="systemctl"
+            ;;
+        *)
+            echo "Unsupported OS"
+            exit 1
+            ;;
+    esac
 else
     echo "Unsupported OS"
     exit 1
 fi
 
 # Update and Upgrade Server
-if [ "$OS" = "Ubuntu" ]; then
+if [ "$PACKAGE_MANAGER" = "apt" ]; then
     sudo apt update && sudo apt upgrade -y
 else
-    sudo yum update -y
+    sudo $PACKAGE_MANAGER update -y
 fi
 
 # Install necessary packages
@@ -36,6 +66,7 @@ install_package lsof
 install_package tar 
 install_package wget
 clear
+
 
 # Define partial functions
 ##############################
