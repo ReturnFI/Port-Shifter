@@ -355,7 +355,15 @@ remove_inbound() {
 
     if [ -n "$selected" ]; then
         port=$(echo "$inbounds" | sed -n "${selected}p" | awk -F ':' '{print $2}')
-        remove_inbound_by_port "$port"
+        
+        # Confirm removal
+        whiptail --title "Confirm Removal" --yesno "Are you sure you want to remove the inbound configuration for port $port?" 8 60
+        response=$?
+        if [ $response -eq 0 ]; then
+            remove_inbound_by_port "$port"
+        else
+            whiptail --title "Remove Inbound" --msgbox "Inbound configuration removal canceled." 8 60
+        fi
     fi
 }
 
