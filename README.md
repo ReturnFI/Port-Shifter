@@ -20,12 +20,12 @@ bash <(curl https://raw.githubusercontent.com/H-Return/Port-Shifter/main/install
 
 This script has been tested and is compatible with the following operating systems:
 
-* Ubuntu 20.04
-* Debian 11
-* CentOS 8
-* Fedora 36
-* AlmaLinux 9
-* Rocky Linux 9
+* Ubuntu 20.04+
+* Debian 11+
+* CentOS 8+
+* Fedora 36+
+* AlmaLinux 9+
+* Rocky Linux 9+
 
 # Usage
 The script provides a dialog-based interface for managing various services. Below are the available functions:
