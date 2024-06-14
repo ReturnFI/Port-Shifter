@@ -213,6 +213,45 @@ add_port_gost() {
     whiptail --title "GOST configuration" --msgbox "New domain and port added." 8 60
 }
 
+remove_port_gost() {
+    ports=$(grep -oP '(?<=-L=tcp://:)\d+(?=/)' /usr/lib/systemd/system/gost.service)
+
+    if [ -z "$ports" ]; then
+        whiptail --title "Remove Port" --msgbox "No ports found in the GOST configuration." 8 60
+        return
+    fi
+
+    port_list=()
+    for port in $ports; do
+        port_list+=("$port" "")
+    done
+
+    selected_port=$(whiptail --title "Remove Port" --menu "Choose the port to remove:" 15 60 5 "${port_list[@]}" 3>&1 1>&2 2>&3)
+
+    if [ -z "$selected_port" ]; then
+        whiptail --title "Remove Port" --msgbox "No port selected. No changes made." 8 60
+        return
+    fi
+
+    line=$(grep -oP "ExecStart=.*-L=tcp://:$selected_port/[^ ]+" /usr/lib/systemd/system/gost.service)
+    domain=$(echo "$line" | grep -oP "(?<=-L=tcp://:$selected_port/).+")
+
+    if (whiptail --title "Confirm Removal" --yesno "Are you sure you want to remove the port $selected_port with domain/IP $domain?" 8 60); then
+        sudo sed -i "\|ExecStart=.*-L=tcp://:$selected_port/$domain|s| -L=tcp://:$selected_port/$domain||" /usr/lib/systemd/system/gost.service
+
+        {
+            echo "50"
+            sudo systemctl daemon-reload > /dev/null 2>&1
+            sudo systemctl restart gost > /dev/null 2>&1
+            echo "100"
+        } | dialog --title "GOST Configuration" --gauge "Removing port $selected_port from GOST service..." 10 60
+
+        whiptail --title "Remove Port" --msgbox "Port $selected_port with domain/IP $domain has been removed from the GOST configuration." 8 60
+    else
+        whiptail --title "Remove Port" --msgbox "No changes made." 8 60
+    fi
+}
+
 uninstall_gost() {
     {
         echo "20" "Stopping GOST service..."
@@ -539,6 +578,7 @@ gost_menu() {
         "Install" "Install GOST" \
         "Status" "Check GOST Port And Status" \
         "Add" "Add Another Port And Domain" \
+        "Remove" "Remove Port And Domain" \
         "Uninstall" "Uninstall GOST" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
@@ -554,6 +594,9 @@ gost_menu() {
                     ;;
                 Add)
                     add_port_gost
+                    ;;
+                Remove)
+                    remove_port_gost
                     ;;
                 Uninstall)
                     uninstall_gost
