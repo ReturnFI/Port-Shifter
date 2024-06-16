@@ -55,7 +55,7 @@ install_package() {
     package=$1
     if ! command -v $package &> /dev/null; then
         echo "Installing $package..."
-        sudo $PACKAGE_MANAGER install $package -y > /dev/null
+        sudo $PACKAGE_MANAGER install $package -y
     fi
 }
 
