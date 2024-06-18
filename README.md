@@ -131,3 +131,7 @@ The script provides a dialog-based interface for managing various services. Belo
 ## Notes
 - Ensure you have a backup of your current iptables rules and configurations before running this script.
 - Running this script will modify system configurations and install various services. Use with caution on production servers.
+
+
+# Disclaimer
+This project is only for personal learning and communication, please do not use it for illegal purposes, please do not use it in a production environment
