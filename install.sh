@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Check if the user has sudo permissions
+if sudo -n true 2>/dev/null; then
+    echo "This User has sudo permissions"
+else
+    echo "This User does not have sudo permissions"
+    exit 1
+fi
+
 # Detect OS and set package/service managers
 if [ -f /etc/redhat-release ]; then
     if grep -q "Rocky" /etc/redhat-release; then
