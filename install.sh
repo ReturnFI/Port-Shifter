@@ -51,9 +51,9 @@ else
     exit 1
 fi
 
-# Update and Upgrade Server
+# Update
 if [ "$PACKAGE_MANAGER" = "apt" ]; then
-    sudo apt update && sudo apt upgrade -y
+    sudo apt update
 else
     sudo $PACKAGE_MANAGER update -y
 fi
