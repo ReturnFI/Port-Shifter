@@ -74,8 +74,8 @@ install_package lsof
 install_package tar 
 install_package wget
 
-if ! grep -q "alias portshift='bash <(curl https://raw.githubusercontent.com/H-Return/Port-Shifter/main/install.sh)'" ~/.bashrc; then
-    echo "alias portshift='bash <(curl https://raw.githubusercontent.com/H-Return/Port-Shifter/main/install.sh)'" >> ~/.bashrc
+if ! grep -q "alias portshift='bash <(curl https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/install.sh)'" ~/.bashrc; then
+    echo "alias portshift='bash <(curl https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/install.sh)'" >> ~/.bashrc
     source ~/.bashrc
 fi
 clear
