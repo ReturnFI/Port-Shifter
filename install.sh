@@ -476,6 +476,89 @@ check_haproxy() {
     whiptail --title "haproxy Service Status and Ports" --msgbox "$info" 15 70
 }
 
+add_frontend_backend() {
+    while true; do
+        frontend_port=$(whiptail --inputbox "Enter Relay-Server Free Port (1-65535):" 8 60 --title "HAProxy Installation" 3>&1 1>&2 2>&3)
+        if [[ "$frontend_port" =~ ^[0-9]+$ ]] && [ "$frontend_port" -ge 1 ] && [ "$frontend_port" -le 65535 ]; then
+            
+            if grep -q "frontend tunnel-$frontend_port" /etc/haproxy/haproxy.cfg; then
+                whiptail --title "Port Already Used" --msgbox "Port $frontend_port is already in use. Please choose another port." 8 60
+            else
+                break
+            fi
+        else
+            whiptail --title "Invalid Input" --msgbox "Please enter a valid numeric port between 1 and 65535." 8 60
+        fi
+    done
+
+    backend_ip=$(whiptail --inputbox "Enter Main-Server IP:" 8 60 --title "Add Frontend/Backend" 3>&1 1>&2 2>&3)
+    while true; do
+        backend_port=$(whiptail --inputbox "Enter Main-Server Port (1-65535):" 8 60 --title "HAProxy Installation" 3>&1 1>&2 2>&3)
+        if [[ "$backend_port" =~ ^[0-9]+$ ]] && [ "$backend_port" -ge 1 ] && [ "$backend_port" -le 65535 ]; then
+            break
+        else
+            whiptail --title "Invalid Input" --msgbox "Please enter a valid numeric port between 1 and 65535." 8 60
+        fi
+    done
+
+    {
+        echo ""
+        echo "frontend tunnel-$frontend_port"
+        echo "    bind *:$frontend_port"
+        echo "    mode tcp"
+        echo "    default_backend tunnel-$backend_port"
+        echo ""
+        echo "backend tunnel-$backend_port"
+        echo "    mode tcp"
+        echo "    server target_server $backend_ip:$backend_port"
+    } | sudo tee -a /etc/haproxy/haproxy.cfg > /dev/null
+
+    sudo systemctl restart haproxy > /dev/null 2>&1
+
+    whiptail --title "Frontend/Backend Added" --msgbox "New frontend and backend added successfully.\n\nFrontend: tunnel-$frontend_port\nBackend: tunnel-$backend_port" 10 60
+}
+
+remove_frontend_backend() {
+    
+    frontends=$(grep -E '^frontend ' /etc/haproxy/haproxy.cfg | awk '{print $2}')
+    
+    
+    options=""
+    for frontend in $frontends; do
+        default_backend=$(grep -E "^frontend $frontend$" /etc/haproxy/haproxy.cfg -A 10 | grep 'default_backend' | awk '{print $2}')
+        options+="$frontend \"$default_backend\" "
+    done
+
+    
+    selected=$(whiptail --menu "Select Frontend to Remove" 20 60 10 $options 3>&1 1>&2 2>&3)
+
+    if [[ -n "$selected" ]]; then
+        frontend_name=$selected
+        backend_name=$(grep -E "^frontend $frontend_name$" /etc/haproxy/haproxy.cfg -A 10 | grep 'default_backend' | awk '{print $2}')
+
+        
+        if [[ -n "$backend_name" ]]; then
+            
+            sudo sed -i "/^frontend $frontend_name$/,/^$/d" /etc/haproxy/haproxy.cfg
+
+            
+            sudo sed -i "/^backend $backend_name$/,/^$/d" /etc/haproxy/haproxy.cfg
+
+            
+            sudo systemctl restart haproxy > /dev/null 2>&1
+
+            
+            whiptail --title "Frontend/Backend Removed" --msgbox "Frontend '$frontend_name' and Backend '$backend_name' removed successfully." 8 60
+        else
+            
+            whiptail --title "Error" --msgbox "Could not find the default backend for frontend '$frontend_name'." 8 60
+        fi
+    else
+        
+        whiptail --title "Cancelled" --msgbox "No frontend selected. Operation cancelled." 8 60
+    fi
+}
+
 uninstall_haproxy() {
     {
         echo "20" "Stopping HAProxy service..."
@@ -686,6 +769,8 @@ haproxy_menu() {
         choice=$(whiptail --backtitle "Port-Shifter" --title "HA-Proxy Menu" --menu "Please choose one of the following options:" 20 60 10 \
         "Install" "Install HA-Proxy" \
         "Status" "Check HA-Proxy Port and Status" \
+        "Add" "Add more tunnel Configuration" \
+        "Remove" "Remove tunnel Configuration" \
         "Uninstall" "Uninstall HAProxy" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
@@ -698,6 +783,12 @@ haproxy_menu() {
                     ;;
                 Status)
                     check_haproxy
+                    ;;
+                Add)
+                    add_frontend_backend
+                    ;;
+                Remove)
+                    remove_frontend_backend
                     ;;
                 Uninstall)
                     uninstall_haproxy
