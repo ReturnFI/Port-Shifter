@@ -51,7 +51,7 @@ The script provides a dialog-based interface for managing various services. Belo
 <details>
 <summary><b>GOST</b></summary>
 
-<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/d76a56c4-44b9-4445-857c-e8c10f1fe7ef" width="600" height="400"></div><br>
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/ReturnFI/Port-Shifter/assets/151555003/014ef77b-8a15-4f8b-9017-ec12c842f4e7" width="600" height="400"></div><br>
 
 1.Install GOST:
 
@@ -66,7 +66,11 @@ The script provides a dialog-based interface for managing various services. Belo
 
 - Adds a new port and domain/IP to the existing GOST configuration.
 
-4.Uninstall GOST:
+4.Remove Port And Domain
+
+- Remove a port and domain/IP From GOST configuration.
+
+5.Uninstall GOST:
 
 - Stops and removes GOST service and binary.
 </details>
@@ -99,7 +103,7 @@ The script provides a dialog-based interface for managing various services. Belo
 <details>
 <summary><b>HAProxy</b></summary>
 
-<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/fdad23d7-6d0f-446f-867a-bf7df51a57fe" width="600" height="400"></div><br>
+<div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/ReturnFI/Port-Shifter/assets/151555003/03fe4db9-f43a-4504-a60c-e83c4f271552" width="600" height="400"></div><br>
   
 1.Install HAProxy:
 
@@ -109,7 +113,15 @@ The script provides a dialog-based interface for managing various services. Belo
 
 - Displays the current HAProxy ports and service status.
 
-3.Uninstall HAProxy:
+3.Add more tunnel Configuration:
+
+- Adds a new configuration to HAProxy
+
+4.Remove tunnel Configuration
+
+- Removes an existing configuration from HAProxy
+
+5.Uninstall HAProxy:
 
 - Stops and removes HAProxy service and configuration.
 </details>
@@ -118,7 +130,7 @@ The script provides a dialog-based interface for managing various services. Belo
 <summary><b>Options</b></summary>
 
 <div align='center'><img style="aspect-ratio:1448/659;" src="https://github.com/H-Return/Port-Shifter/assets/151555003/52165edf-71df-4fbb-904c-c8fdf566c374" width="600" height="400"></div><br>
-  
+
 1.Configure DNS:
 
 - Updates DNS server settings.
