@@ -210,6 +210,12 @@ check_port_gost() {
 }
 
 add_port_gost() {
+
+    if ! systemctl is-active --quiet gost; then
+        whiptail --title "GOST Not Active" --msgbox "GOST service is not active. Please start GOST before adding new configuration." 8 60
+        return
+    fi
+
     last_port=$(sudo lsof -i -P -n -sTCP:LISTEN | grep gost | awk '{print $9}' | awk -F ':' '{print $NF}' | sort -n | tail -n 1)
 
     new_domain=$(whiptail --inputbox "Enter your domain or IP:" 8 60  --title "GOST Installation" 3>&1 1>&2 2>&3)
