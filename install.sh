@@ -121,29 +121,34 @@ check_port_iptables() {
 }
 
 uninstall_iptables() {
-    {
-        echo "10" "Flushing iptables rules..."
-        sudo iptables -F > /dev/null 2>&1
-        sleep 1
-        echo "20" "Deleting all user-defined chains..."
-        sudo iptables -X > /dev/null 2>&1
-        sleep 1
-        echo "40" "Flushing NAT table..."
-        sudo iptables -t nat -F > /dev/null 2>&1
-        sleep 1
-        echo "50" "Deleting user-defined chains in NAT table..."
-        sudo iptables -t nat -X > /dev/null 2>&1
-        sleep 1
-        echo "70" "Removing /etc/iptables/rules.v4..."
-        sudo rm /etc/iptables/rules.v4 > /dev/null 2>&1
-        sleep 1
-        echo "80" "Stopping iptables service..."
-        sudo systemctl stop iptables > /dev/null 2>&1
-        sleep 1
-        echo "100" "IPTables Uninstallation completed!"
-    } | dialog --title "IPTables Uninstallation" --gauge "Uninstalling IPTables..." 10 100 0
-    clear
-    whiptail --title "IPTables Uninstallation" --msgbox "IPTables Uninstalled." 8 60
+    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall IPTables?" 8 60); then
+        {
+            echo "10" "Flushing iptables rules..."
+            sudo iptables -F > /dev/null 2>&1
+            sleep 1
+            echo "20" "Deleting all user-defined chains..."
+            sudo iptables -X > /dev/null 2>&1
+            sleep 1
+            echo "40" "Flushing NAT table..."
+            sudo iptables -t nat -F > /dev/null 2>&1
+            sleep 1
+            echo "50" "Deleting user-defined chains in NAT table..."
+            sudo iptables -t nat -X > /dev/null 2>&1
+            sleep 1
+            echo "70" "Removing /etc/iptables/rules.v4..."
+            sudo rm /etc/iptables/rules.v4 > /dev/null 2>&1
+            sleep 1
+            echo "80" "Stopping iptables service..."
+            sudo systemctl stop iptables > /dev/null 2>&1
+            sleep 1
+            echo "100" "IPTables Uninstallation completed!"
+        } | dialog --title "IPTables Uninstallation" --gauge "Uninstalling IPTables..." 10 100 0
+        clear
+        whiptail --title "IPTables Uninstallation" --msgbox "IPTables Uninstalled." 8 60
+    else
+        whiptail --title "IPTables Uninstallation" --msgbox "Uninstallation cancelled." 8 60
+        clear
+    fi
 }
 
 
@@ -276,22 +281,26 @@ remove_port_gost() {
 }
 
 uninstall_gost() {
-    {
-        echo "20" "Stopping GOST service..."
-        sudo systemctl stop gost > /dev/null 2>&1
-        sleep 1
-        echo "40" "Disabling GOST service..."
-        sudo systemctl disable gost > /dev/null 2>&1
-        sleep 1
-        echo "60" "Reloading systemctl daemon..."
-        sudo systemctl daemon-reload > /dev/null 2>&1
-        sleep 1
-        echo "80" "Removing GOST service and binary..."
-        sudo rm -f /usr/lib/systemd/system/gost.service /usr/local/bin/gost
-        sleep 1
-    } | dialog --title "GOST Uninstallation" --gauge "Uninstalling GOST..." 10 60 0
-    clear
-    whiptail --title "GOST Uninstallation" --msgbox "GOST Service Uninstalled." 8 60
+    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall GOST?" 8 60); then
+        {
+            echo "20" "Stopping GOST service..."
+            sudo systemctl stop gost > /dev/null 2>&1
+            sleep 1
+            echo "40" "Disabling GOST service..."
+            sudo systemctl disable gost > /dev/null 2>&1
+            sleep 1
+            echo "60" "Reloading systemctl daemon..."
+            sudo systemctl daemon-reload > /dev/null 2>&1
+            sleep 1
+            echo "80" "Removing GOST service and binary..."
+            sudo rm -f /usr/lib/systemd/system/gost.service /usr/local/bin/gost
+            sleep 1
+        } | dialog --title "GOST Uninstallation" --gauge "Uninstalling GOST..." 10 60 0
+        clear
+        whiptail --title "GOST Uninstallation" --msgbox "GOST Service Uninstalled." 8 60
+    else
+        whiptail --title "GOST Uninstallation" --msgbox "Uninstallation cancelled." 8 60
+    fi
 }
 
 ##########################
@@ -416,21 +425,26 @@ remove_inbound_by_port() {
 }
 
 uninstall_xray() {
-    (
-    echo "10" "Removing Xray configuration..."
-    sudo rm /usr/local/etc/xray/config.json > /dev/null 2>&1
-    sleep 1
-    echo "30" "Stopping and disabling Xray service..."
-    sudo systemctl stop xray && sudo systemctl disable xray > /dev/null 2>&1
-    sleep 1
-    echo "70" "Uninstalling Xray..."
-    sudo bash -c "$(curl -sL https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove > /dev/null 2>&1
-    sleep 1
-    echo "100" "Xray Uninstallation completed!"
-    sleep 1
-    ) | dialog --title "Xray Uninstallation" --gauge "Xray Uninstallation in progress..." 10 100 0
-    whiptail --title "Xray Uninstallation" --msgbox "Xray Uninstallation completed!" 8 60
-    clear
+    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall Xray?" 8 60); then
+        (
+        echo "10" "Removing Xray configuration..."
+        sudo rm /usr/local/etc/xray/config.json > /dev/null 2>&1
+        sleep 1
+        echo "30" "Stopping and disabling Xray service..."
+        sudo systemctl stop xray && sudo systemctl disable xray > /dev/null 2>&1
+        sleep 1
+        echo "70" "Uninstalling Xray..."
+        sudo bash -c "$(curl -sL https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove > /dev/null 2>&1
+        sleep 1
+        echo "100" "Xray Uninstallation completed!"
+        sleep 1
+        ) | dialog --title "Xray Uninstallation" --gauge "Xray Uninstallation in progress..." 10 100 0
+        whiptail --title "Xray Uninstallation" --msgbox "Xray Uninstallation completed!" 8 60
+        clear
+    else
+        whiptail --title "Xray Uninstallation" --msgbox "Uninstallation cancelled." 8 60
+        clear
+    fi
 }
 
 ##############################
@@ -597,20 +611,25 @@ remove_frontend_backend() {
 }
 
 uninstall_haproxy() {
-    {
-        echo "20" "Stopping HAProxy service..."
-        sudo systemctl stop haproxy > /dev/null 2>&1
-        sleep 1
-        echo "40" "Disabling HAProxy service..."
-        sudo systemctl disable haproxy > /dev/null 2>&1
-        sleep 1
-        echo "60" "Removing HAProxy..."
-        sudo $PACKAGE_MANAGER remove haproxy -y > /dev/null 2>&1
-        sleep 1
-    } | dialog --title "HAProxy Uninstallation" --gauge "Uninstalling HAProxy..." 10 60 0
+    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall HAProxy?" 8 60); then
+        {
+            echo "20" "Stopping HAProxy service..."
+            sudo systemctl stop haproxy > /dev/null 2>&1
+            sleep 1
+            echo "40" "Disabling HAProxy service..."
+            sudo systemctl disable haproxy > /dev/null 2>&1
+            sleep 1
+            echo "60" "Removing HAProxy..."
+            sudo $PACKAGE_MANAGER remove haproxy -y > /dev/null 2>&1
+            sleep 1
+        } | dialog --title "HAProxy Uninstallation" --gauge "Uninstalling HAProxy..." 10 60 0
 
-    whiptail --title "HAProxy Uninstallation" --msgbox "HA-Proxy Uninstalled." 8 60
-    clear
+        whiptail --title "HAProxy Uninstallation" --msgbox "HAProxy Uninstalled." 8 60
+        clear
+    else
+        whiptail --title "HAProxy Uninstallation" --msgbox "Uninstallation cancelled." 8 60
+        clear
+    fi
 }
 
 ##############################
