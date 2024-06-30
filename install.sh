@@ -155,6 +155,13 @@ uninstall_iptables() {
 ##########################
 ## Functions for GOST setup
 install_gost() {
+    if systemctl is-active --quiet gost; then
+        if ! (whiptail --title "Confirm Installation" --yesno "GOST service is already installed. Do you want to reinstall?" 8 60); then
+            whiptail --title "Installation Cancelled" --msgbox "Installation cancelled. GOST service remains installed." 8 60
+            return
+        fi
+    fi
+
     {
         echo "10"
         curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh | bash -s -- --install > /dev/null 2>&1
@@ -306,10 +313,17 @@ uninstall_gost() {
 ##########################
 ## Functions for Xray setup
 install_xray() {
+    if systemctl is-active --quiet xray; then
+        if ! (whiptail --title "Confirm Installation" --yesno "Xray service is already active. Do you want to reinstall?" 8 60); then
+            whiptail --title "Installation Cancelled" --msgbox "Installation cancelled. Xray service remains active." 8 60
+            return
+        fi
+    fi
+
     bash -c "$(curl -sL https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install 2>&1 | dialog --title "Xray Installation" --progressbox 30 120
 
     whiptail --title "Xray Installation" --msgbox "Xray installation completed!" 8 60
-    clear
+
     address=$(whiptail --inputbox "Enter your domain or IP:" 8 60 --title "Address Input" 3>&1 1>&2 2>&3)
     while : ; do
         port=$(whiptail --inputbox "Enter the port (numeric only 1-65535):" 8 60 --title "Port Input" 3>&1 1>&2 2>&3)
@@ -319,10 +333,11 @@ install_xray() {
             whiptail --title "Invalid Input" --msgbox "Port must be a numeric value between 1 and 65535. Please try again." 8 60
         fi
     done
-    wget -O /tmp/config.json https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/config.json > /dev/null 2>&1
-    clear
-    jq --arg address "$address" --arg port "$port" '.inbounds[1].port = ($port | tonumber) | .inbounds[1].settings.address = $address | .inbounds[1].settings.port = ($port | tonumber) | .inbounds[1].tag = "inbound-" + $port' /tmp/config.json > /usr/local/etc/xray/config.json
 
+    wget -q -O /tmp/config.json https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/config.json
+
+    jq --arg address "$address" --arg port "$port" '.inbounds[1].port = ($port | tonumber) | .inbounds[1].settings.address = $address | .inbounds[1].settings.port = ($port | tonumber) | .inbounds[1].tag = "inbound-" + $port' /tmp/config.json > /usr/local/etc/xray/config.json
+    clear
     sudo systemctl restart xray
     status=$(sudo systemctl is-active xray)
 
@@ -450,6 +465,14 @@ uninstall_xray() {
 ##############################
 ## Functions for HA-Proxy setup
 install_haproxy() {
+
+    if systemctl is-active --quiet haproxy; then
+        if ! (whiptail --title "Confirm Installation" --yesno "HAProxy service is already active. Do you want to reinstall?" 8 60); then
+            whiptail --title "Installation Cancelled" --msgbox "Installation cancelled. HAProxy service remains active." 8 60
+            return
+        fi
+    fi
+
     {
         echo "10" "Installing HAProxy..."
         sudo $PACKAGE_MANAGER install haproxy -y > /dev/null 2>&1
@@ -493,9 +516,9 @@ install_haproxy() {
 
         status=$(sudo systemctl is-active haproxy)
         if [ "$status" = "active" ]; then
-            whiptail --title "HAProxy Installation" --msgbox "HA-Proxy tunnel is installed and active." 8 60
+            whiptail --title "HAProxy Installation" --msgbox "HAProxy tunnel is installed and active." 8 60
         else
-            whiptail --title "HAProxy Installation" --msgbox "HA-Proxy service is not active. Status: $status." 8 60
+            whiptail --title "HAProxy Installation" --msgbox "HAProxy service is not active. Status: $status." 8 60
         fi
     else
         whiptail --title "HAProxy Installation" --msgbox "Invalid IP input. Please ensure the field is filled correctly." 8 60
