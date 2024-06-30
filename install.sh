@@ -212,7 +212,7 @@ check_port_gost() {
 add_port_gost() {
 
     if ! systemctl is-active --quiet gost; then
-        whiptail --title "GOST Not Active" --msgbox "GOST service is not active. Please start GOST before adding new configuration." 8 60
+        whiptail --title "GOST Not Active" --msgbox "GOST service is not active.\nPlease start GOST before adding new configuration." 8 60
         return
     fi
 
@@ -371,7 +371,7 @@ check_service_xray() {
 add_another_inbound() {
 
     if ! systemctl is-active --quiet xray; then
-        whiptail --title "Xray Not Active" --msgbox "Xray service is not active. Please start Xray before adding new inbounds." 8 60
+        whiptail --title "Xray Not Active" --msgbox "Xray service is not active.\nPlease start Xray before adding new inbounds." 8 60
         return
     fi
 
@@ -546,6 +546,12 @@ check_haproxy() {
 }
 
 add_frontend_backend() {
+
+    if ! systemctl is-active --quiet haproxy; then
+        whiptail --title "HAProxy Not Active" --msgbox "HAProxy service is not active.\nPlease start HAProxy before adding new configuration." 8 60
+        return
+    fi
+
     while true; do
         frontend_port=$(whiptail --inputbox "Enter Relay-Server Free Port (1-65535):" 8 60 --title "HAProxy Installation" 3>&1 1>&2 2>&3)
         exit_status=$?
