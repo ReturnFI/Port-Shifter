@@ -499,8 +499,13 @@ check_haproxy() {
 add_frontend_backend() {
     while true; do
         frontend_port=$(whiptail --inputbox "Enter Relay-Server Free Port (1-65535):" 8 60 --title "HAProxy Installation" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status != 0 ]; then
+            whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+            return
+        fi
+        
         if [[ "$frontend_port" =~ ^[0-9]+$ ]] && [ "$frontend_port" -ge 1 ] && [ "$frontend_port" -le 65535 ]; then
-            
             if grep -q "frontend tunnel-$frontend_port" /etc/haproxy/haproxy.cfg; then
                 whiptail --title "Port Already Used" --msgbox "Port $frontend_port is already in use. Please choose another port." 8 60
             else
@@ -512,8 +517,20 @@ add_frontend_backend() {
     done
 
     backend_ip=$(whiptail --inputbox "Enter Main-Server IP:" 8 60 --title "Add Frontend/Backend" 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status != 0 ]; then
+        whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+        return
+    fi
+
     while true; do
         backend_port=$(whiptail --inputbox "Enter Main-Server Port (1-65535):" 8 60 --title "HAProxy Installation" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status != 0 ]; then
+            whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+            return
+        fi
+        
         if [[ "$backend_port" =~ ^[0-9]+$ ]] && [ "$backend_port" -ge 1 ] && [ "$backend_port" -le 65535 ]; then
             break
         else
