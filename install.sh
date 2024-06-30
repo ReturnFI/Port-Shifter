@@ -340,9 +340,19 @@ check_service_xray() {
 
 add_another_inbound() {
     addressnew=$(whiptail --inputbox "Enter the new address:" 8 60 --title "Address Input" 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status != 0 ]; then
+        whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+        return
+    fi
 
     while : ; do
         portnew=$(whiptail --inputbox "Enter the new port (numeric only):" 8 60 --title "Port Input" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status != 0 ]; then
+            whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+            return
+        fi
         
         if ! [[ "$portnew" =~ ^[0-9]+$ ]]; then
             whiptail --title "Invalid Input" --msgbox "Port must be a numeric value. Please try again." 8 60
