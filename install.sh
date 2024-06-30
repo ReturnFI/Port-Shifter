@@ -363,6 +363,12 @@ check_service_xray() {
 }
 
 add_another_inbound() {
+
+    if ! systemctl is-active --quiet xray; then
+        whiptail --title "Xray Not Active" --msgbox "Xray service is not active. Please start Xray before adding new inbounds." 8 60
+        return
+    fi
+
     addressnew=$(whiptail --inputbox "Enter the new address:" 8 60 --title "Address Input" 3>&1 1>&2 2>&3)
     exit_status=$?
     if [ $exit_status != 0 ]; then
@@ -378,8 +384,8 @@ add_another_inbound() {
             return
         fi
         
-        if ! [[ "$portnew" =~ ^[0-9]+$ ]]; then
-            whiptail --title "Invalid Input" --msgbox "Port must be a numeric value. Please try again." 8 60
+        if ! [[ "$portnew" =~ ^[0-9]+$ ]] || ! (( portnew >= 1 && portnew <= 65535 )); then
+            whiptail --title "Invalid Input" --msgbox "Port must be a numeric value between 1 and 65535. Please try again." 8 60
             continue
         fi
 
