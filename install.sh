@@ -201,9 +201,19 @@ add_port_gost() {
     last_port=$(sudo lsof -i -P -n -sTCP:LISTEN | grep gost | awk '{print $9}' | awk -F ':' '{print $NF}' | sort -n | tail -n 1)
 
     new_domain=$(whiptail --inputbox "Enter your domain or IP:" 8 60  --title "GOST Installation" 3>&1 1>&2 2>&3)
+    exit_status=$?
+    if [ $exit_status != 0 ]; then
+        whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+        return
+    fi
 
     while : ; do
         new_port=$(whiptail --inputbox "Enter the port (numeric only):" 8 60 --title "Port Input" 3>&1 1>&2 2>&3)
+        exit_status=$?
+        if [ $exit_status != 0 ]; then
+            whiptail --title "Cancelled" --msgbox "Operation cancelled. Returning to menu." 8 60
+            return
+        fi
         
         if [[ "$new_port" =~ ^[0-9]+$ ]]; then
             if (( new_port >= 0 && new_port <= 65535 )); then
