@@ -121,7 +121,7 @@ check_port_iptables() {
 }
 
 uninstall_iptables() {
-    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall IPTables?" 8 60); then
+    if whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall IPTables?" 8 60; then
         {
             echo "10" ; echo "Flushing iptables rules..."
             sudo iptables -F > /dev/null 2>&1
@@ -292,7 +292,7 @@ remove_port_gost() {
 }
 
 uninstall_gost() {
-    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall GOST?" 8 60); then
+    if whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall GOST?" 8 60; then
         {
             echo "20" "Stopping GOST service..."
             sudo systemctl stop gost > /dev/null 2>&1
@@ -367,6 +367,10 @@ check_service_xray() {
 }
 
 add_another_inbound() {
+    if ! systemctl is-active --quiet xray; then
+    whiptail --title "Install Xray" --msgbox "xray service is not active.\nPlease start xray before adding new configuration." 8 60
+        return
+    fi
     addressnew=$(whiptail --inputbox "Enter the new address:" 8 60 --title "Address Input" 3>&1 1>&2 2>&3)
     exit_status=$?
     if [ $exit_status != 0 ]; then
