@@ -123,26 +123,26 @@ check_port_iptables() {
 uninstall_iptables() {
     if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall IPTables?" 8 60); then
         {
-            echo "10" "Flushing iptables rules..."
+            echo "10" ; echo "Flushing iptables rules..."
             sudo iptables -F > /dev/null 2>&1
             sleep 1
-            echo "20" "Deleting all user-defined chains..."
+            echo "20" ; echo "Deleting all user-defined chains..."
             sudo iptables -X > /dev/null 2>&1
             sleep 1
-            echo "40" "Flushing NAT table..."
+            echo "40" ; echo "Flushing NAT table..."
             sudo iptables -t nat -F > /dev/null 2>&1
             sleep 1
-            echo "50" "Deleting user-defined chains in NAT table..."
+            echo "50" ; echo "Deleting user-defined chains in NAT table..."
             sudo iptables -t nat -X > /dev/null 2>&1
             sleep 1
-            echo "70" "Removing /etc/iptables/rules.v4..."
+            echo "70" ; echo "Removing /etc/iptables/rules.v4..."
             sudo rm /etc/iptables/rules.v4 > /dev/null 2>&1
             sleep 1
-            echo "80" "Stopping iptables service..."
+            echo "80" ; echo "Stopping iptables service..."
             sudo systemctl stop iptables > /dev/null 2>&1
             sleep 1
-            echo "100" "IPTables Uninstallation completed!"
-        } | dialog --title "IPTables Uninstallation" --gauge "Uninstalling IPTables..." 10 100 0
+            echo "100" ; echo "IPTables Uninstallation completed!"
+        } | whiptail --gauge "Uninstalling IPTables..." 10 70 0
         clear
         whiptail --title "IPTables Uninstallation" --msgbox "IPTables Uninstalled." 8 60
     else
@@ -150,7 +150,6 @@ uninstall_iptables() {
         clear
     fi
 }
-
 
 ##########################
 ## Functions for GOST setup
