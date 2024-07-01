@@ -209,7 +209,6 @@ check_port_gost() {
 }
 
 add_port_gost() {
-
     if ! systemctl is-active --quiet gost; then
         whiptail --title "GOST Not Active" --msgbox "GOST service is not active.\nPlease start GOST before adding new configuration." 8 60
         return
@@ -368,7 +367,6 @@ check_service_xray() {
 }
 
 add_another_inbound() {
-
     if ! systemctl is-active --quiet xray; then
         whiptail --title "Xray Not Active" --msgbox "Xray service is not active.\nPlease start Xray before adding new inbounds." 8 60
         return
@@ -476,7 +474,6 @@ uninstall_xray() {
 ##############################
 ## Functions for HA-Proxy setup
 install_haproxy() {
-
     if systemctl is-active --quiet haproxy; then
         if ! (whiptail --title "Confirm Installation" --yesno "HAProxy service is already active. Do you want to reinstall?" 8 60); then
             whiptail --title "Installation Cancelled" --msgbox "Installation cancelled. HAProxy service remains active." 8 60
