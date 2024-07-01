@@ -275,7 +275,7 @@ remove_port_gost() {
     line=$(grep -oP "ExecStart=.*-L=tcp://:$selected_port/[^ ]+" /usr/lib/systemd/system/gost.service)
     domain=$(echo "$line" | grep -oP "(?<=-L=tcp://:$selected_port/).+")
 
-    if (whiptail --title "Confirm Removal" --yesno "Are you sure you want to remove the port $selected_port with domain/IP $domain?" 8 60); then
+    if whiptail --title "Confirm Removal" --yesno "Are you sure you want to remove the port $selected_port with domain/IP $domain?" 8 60; then
         sudo sed -i "\|ExecStart=.*-L=tcp://:$selected_port/$domain|s| -L=tcp://:$selected_port/$domain||" /usr/lib/systemd/system/gost.service
 
         {
@@ -448,7 +448,7 @@ remove_inbound_by_port() {
 }
 
 uninstall_xray() {
-    if (whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall Xray?" 8 60); then
+    if whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall Xray?" 8 60; then
         (
         echo "10" "Removing Xray configuration..."
         sudo rm /usr/local/etc/xray/config.json > /dev/null 2>&1
