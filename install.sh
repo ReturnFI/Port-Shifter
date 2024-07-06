@@ -367,6 +367,11 @@ check_service_xray() {
 }
 
 trafficstat() {
+    if ! systemctl is-active --quiet xray; then
+    whiptail --title "Install Xray" --msgbox "xray service is not active.\nPlease start xray before check traffic." 8 60
+        return
+    fi
+    
     local RESET=$1
     local APISERVER="127.0.0.1:10085"
     local XRAY="/usr/local/bin/xray"
