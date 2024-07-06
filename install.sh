@@ -366,6 +366,54 @@ check_service_xray() {
 
 }
 
+trafficstat() {
+    local RESET=$1
+    local APISERVER="127.0.0.1:10085"
+    local XRAY="/usr/local/bin/xray"
+    local ARGS=""
+    
+    if [[ "$RESET" == "reset" ]]; then
+        ARGS="reset: true"
+    fi
+
+    local DATA=$($XRAY api statsquery --server="$APISERVER" "$ARGS" | awk '
+    {
+        if (match($1, /"name":/)) {
+            f=1; gsub(/^"|link"|,$/, "", $2);
+            split($2, p,  ">>>");
+            printf "%s:%s->%s\t", p[1], p[2], p[4];
+        } else if (match($1, /"value":/) && f) {
+            f=0;
+            gsub(/"/, "", $2);
+            printf "%.0f\n\n", $2;
+        } else if (match($0, /}/) && f) {
+            f=0; 
+            print 0;
+        }
+    }')
+
+    local PREFIX="inbound"
+    local SORTED=$(echo "$DATA" | grep "^${PREFIX}" | grep -v "inbound:api" | sort -r)
+    local TOTAL_UP=0
+    local TOTAL_DOWN=0
+
+    while IFS= read -r LINE; do
+        if [[ "$LINE" == *"->up"* ]]; then
+            SIZE=$(echo "$LINE" | awk '{print $2}')
+            TOTAL_UP=$((TOTAL_UP + SIZE))
+        elif [[ "$LINE" == *"->down"* ]]; then
+            SIZE=$(echo "$LINE" | awk '{print $2}')
+            TOTAL_DOWN=$((TOTAL_DOWN + SIZE))
+        fi
+    done <<< "$SORTED"
+
+    local OUTPUT=$(echo -e "${SORTED}\n" | numfmt --field=2 --suffix=B --to=iec | column -t)
+    local TOTAL_UP_FMT=$(numfmt --to=iec <<< $TOTAL_UP)
+    local TOTAL_DOWN_FMT=$(numfmt --to=iec <<< $TOTAL_DOWN)
+
+    whiptail --msgbox "Inbound Traffic Statistics:\n\n${OUTPUT}\nTotal Up: ${TOTAL_UP_FMT}\nTotal Down: ${TOTAL_DOWN_FMT}" 20 80
+}
+
 add_another_inbound() {
     if ! systemctl is-active --quiet xray; then
     whiptail --title "Install Xray" --msgbox "xray service is not active.\nPlease start xray before adding new configuration." 8 60
@@ -811,11 +859,13 @@ gost_menu() {
     done
 }
 
+# Graphical functionality for dokodemo menu
 dokodemo_menu() {
     while true; do
         choice=$(whiptail --backtitle "Port-Shifter" --title "Dokodemo-Door Menu" --menu "Please choose one of the following options:" 20 60 10 \
         "Install" "Install Xray For Dokodemo-Door And Add Inbound" \
         "Status" "Check Xray Service Status" \
+        "Traffic" "Inbound Traffic Statistics" \
         "Add" "Add Another Inbound" \
         "Remove" "Remove an Inbound Configuration" \
         "Uninstall" "Uninstall Xray And Tunnel" \
@@ -831,6 +881,9 @@ dokodemo_menu() {
                 Status)
                     check_service_xray
                     ;;
+                Traffic)
+                    trafficstat
+                     ;;
                 Add)
                     add_another_inbound
                     ;;
@@ -853,7 +906,6 @@ dokodemo_menu() {
         fi
     done
 }
-
 
 # Graphical functionality for Socat menu
 haproxy_menu() {
