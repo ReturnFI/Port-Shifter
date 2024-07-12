@@ -644,7 +644,7 @@ add_frontend_backend() {
     {
         echo ""
         echo "frontend tunnel-$frontend_port"
-        echo "    bind *:$frontend_port"
+        echo "    bind :::$frontend_port"
         echo "    mode tcp"
         echo "    default_backend tunnel-$backend_port"
         echo ""
