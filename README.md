@@ -27,7 +27,10 @@ This script has been tested and is compatible with the following operating syste
 * AlmaLinux 9+
 * Rocky Linux 9+
 
-# Usage
+# Usage+(Video)
+
+<div align='center'><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=xAMd9DFZpQw"><img style="aspect-ratio:1448/659;" src="https://img.youtube.com/vi/xAMd9DFZpQw/maxresdefault.jpg" width="600" height="300"></a></div>
+
 The script provides a dialog-based interface for managing various services. Below are the available functions:
 
 <details>
