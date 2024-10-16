@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source /opt/Port-Shifter/scripts/path.sh
+source /opt/Port-Shifter/scripts/package.sh
+
 install_iptables() {
     IP=$(whiptail --inputbox "Enter your main server IP like (1.1.1.1):" 8 60 3>&1 1>&2 2>&3)
     TCP_PORTS=$(whiptail --inputbox "Enter ports separated by commas (e.g., 80,443):" 8 60 80,443 3>&1 1>&2 2>&3)

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source /opt/Port-Shifter/scripts/path.sh
+source /opt/Port-Shifter/scripts/package.sh
+
 install_xray() {
     if systemctl is-active --quiet xray; then
         if ! (whiptail --title "Confirm Installation" --yesno "Xray service is already active. Do you want to reinstall?" 8 60); then

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /opt/Port-Shifter/scripts/path.sh
+source /opt/Port-Shifter/scripts/package.sh
 
 configure_dns() {
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source /opt/Port-Shifter/scripts/path.sh
+source /opt/Port-Shifter/scripts/package.sh
+
 install_gost() {
     if systemctl is-active --quiet gost; then
         if ! (whiptail --title "Confirm Installation" --yesno "GOST service is already installed. Do you want to reinstall?" 8 60); then

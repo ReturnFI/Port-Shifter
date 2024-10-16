@@ -1,7 +1,8 @@
 #!/bin/bash
 
-##############################
-## Functions for HA-Proxy setup
+source /opt/Port-Shifter/scripts/path.sh
+source /opt/Port-Shifter/scripts/package.sh
+
 install_haproxy() {
     if systemctl is-active --quiet haproxy; then
         if ! (whiptail --title "Confirm Installation" --yesno "HAProxy service is already active. Do you want to reinstall?" 8 60); then
