@@ -73,6 +73,7 @@ install_package jq
 install_package lsof
 install_package tar 
 install_package wget
+install_package git
 
 if ! grep -q "alias portshift='bash <(curl https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/install.sh)'" ~/.bashrc; then
     echo "alias portshift='bash <(curl https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/install.sh)'" >> ~/.bashrc
