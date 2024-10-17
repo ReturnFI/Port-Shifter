@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for script in /opt/Port-Shifter/script/*.sh; do
+for script in /opt/Port-Shifter/scripts/*.sh; do
   source "$script"
 done
 
