@@ -4,7 +4,6 @@ for script in /opt/Port-Shifter/scripts/*.sh; do
   source "$script"
 done
 
-# Graphical functionality for IP-Tables menu
 iptables_menu() {
     while true; do
         choice=$(whiptail --backtitle "Port-Shifter" --title "IP-Tables Menu" --menu "Please choose one of the following options:" 20 60 10 \
@@ -13,9 +12,7 @@ iptables_menu() {
         "Uninstall" "Uninstall IP-Tables Rules" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $choice in
                 Install)
                     install_iptables
@@ -40,7 +37,6 @@ iptables_menu() {
     done
 }
 
-# Graphical functionality for GOST menu
 gost_menu() {
     while true; do
         choice=$(whiptail --backtitle "Port-Shifter" --title "GOST Menu" --menu "Please choose one of the following options:" 20 60 10 \
@@ -51,9 +47,7 @@ gost_menu() {
         "Uninstall" "Uninstall GOST" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $choice in
                 Install)
                     install_gost
@@ -84,7 +78,6 @@ gost_menu() {
     done
 }
 
-# Graphical functionality for dokodemo menu
 dokodemo_menu() {
     while true; do
         choice=$(whiptail --backtitle "Port-Shifter" --title "Dokodemo-Door Menu" --menu "Please choose one of the following options:" 20 60 10 \
@@ -96,9 +89,7 @@ dokodemo_menu() {
         "Uninstall" "Uninstall Xray And Tunnel" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $choice in
                 Install)
                     install_xray
@@ -132,7 +123,6 @@ dokodemo_menu() {
     done
 }
 
-# Graphical functionality for Socat menu
 haproxy_menu() {
     while true; do
         choice=$(whiptail --backtitle "Port-Shifter" --title "HA-Proxy Menu" --menu "Please choose one of the following options:" 20 60 10 \
@@ -143,9 +133,7 @@ haproxy_menu() {
         "Uninstall" "Uninstall HAProxy" \
         "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $choice in
                 Install)
                     install_haproxy
@@ -176,7 +164,6 @@ haproxy_menu() {
     done
 }
 
-# Define the submenu for Other Options
 function other_options_menu() {
     while true; do
         other_choice=$(whiptail --backtitle "Welcome to Port-Shifter" --title "Other Options" --menu "Please choose one of the following options:" 20 60 10 \
@@ -185,9 +172,7 @@ function other_options_menu() {
         "Ping" "Ping to check internet connectivity" \
         "Back" "Return to Main Menu" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $other_choice in
                 DNS)
                     configure_dns
@@ -210,8 +195,7 @@ function other_options_menu() {
         fi
     done
 }
-#################################
-# Define the main graphical menu
+
 function menu() {
     while true; do
         choice=$(whiptail --backtitle "Welcome to Port-Shifter" --title "Choose Your Tunnel Mode" --menu "Please choose one of the following options:" 20 60 10 \
@@ -222,9 +206,7 @@ function menu() {
         "Options" "Additional Configuration Options" \
         "Quit" "Exit From The Script" 3>&1 1>&2 2>&3)
 
-        # Check the return value of the whiptail command
         if [ $? -eq 0 ]; then
-            # Check if the user selected a valid option
             case $choice in
                 IP-Tables)
                     iptables_menu
@@ -255,5 +237,4 @@ function menu() {
     done
 }
 
-# Call the menu function
 menu
