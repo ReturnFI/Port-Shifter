@@ -88,7 +88,7 @@ fi
 sleep 3
 clear
 
-git clone -b beta https://github.com/ReturnFI/Port-Shifter /opt/Port-Shifter > /dev/null 2>&1
+git clone https://github.com/ReturnFI/Port-Shifter /opt/Port-Shifter > /dev/null 2>&1
 cd /opt/Port-Shifter
 chmod +x menu.sh
 ./menu.sh
