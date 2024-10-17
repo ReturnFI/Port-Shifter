@@ -2,31 +2,24 @@ source /opt/Port-Shifter/scripts/path.sh
 source /opt/Port-Shifter/scripts/package.sh
 
 configure_dns() {
-
     sudo cp /etc/resolv.conf /etc/resolv.conf.backup
     sudo rm /etc/resolv.conf > /dev/null 2>&1
-
     dns1=$(whiptail --inputbox "Enter DNS Server 1 (like 8.8.8.8):" 8 60 3>&1 1>&2 2>&3)
     exitstatus=$?
-
     if [ $exitstatus != 0 ] || [ -z "$dns1" ]; then
         whiptail --title "DNS Configuration" --msgbox "Operation cancelled or invalid input. Restoring default DNS configuration." 8 60
         restore_dns
         exit 1
     fi
-
     dns2=$(whiptail --inputbox "Enter DNS Server 2 (like 8.8.4.4):" 8 60 3>&1 1>&2 2>&3)
     exitstatus=$?
-
     if [ $exitstatus != 0 ] || [ -z "$dns2" ]; then
         whiptail --title "DNS Configuration" --msgbox "Operation cancelled or invalid input. Restoring default DNS configuration." 8 60
         restore_dns
         exit 1
     fi
-
     echo "nameserver $dns1" | sudo tee -a /etc/resolv.conf > /dev/null
     echo "nameserver $dns2" | sudo tee -a /etc/resolv.conf > /dev/null
-
     whiptail --title "DNS Configuration" --msgbox "DNS Configuration completed." 8 60
     clear
 }
@@ -49,7 +42,6 @@ function update_server() {
 function ping_websites() {
     websites=("github.com" "google.com" "www.cloudflare.com")
     results_file=$(mktemp)
-
     for website in "${websites[@]}"; do
         gauge_title="Pinging $website"
         gauge_percentage=0
@@ -73,9 +65,7 @@ function ping_websites() {
         result=$(ping -c 5 $website | tail -n 2)
         echo -e "\n\nPing results for $website:\n$result" >> "$results_file"
     done
-
     whiptail --title "Ping Websites" --textbox "$results_file" 30 80
     clear
-
     rm "$results_file"
 }
