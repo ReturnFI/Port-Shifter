@@ -76,8 +76,8 @@ for package in "${necessary_packages[@]}"; do
     install_package "$package"
 done
 
-if ! grep -q "alias relay='bash -c \"/opt/Port-Shifter/menu.sh\"'" ~/.bashrc; then
-    echo "alias relay='bash -c \"/opt/Port-Shifter/menu.sh\"'" >> ~/.bashrc
+if ! grep -q "alias portshift='bash -c \"/opt/Port-Shifter/menu.sh\"'" ~/.bashrc; then
+    echo "alias portshift='bash -c \"/opt/Port-Shifter/menu.sh\"'" >> ~/.bashrc
     echo "Alias added to .bashrc"
     source ~/.bashrc
 else
