@@ -25,7 +25,7 @@ install_xray() {
         fi
     done
 
-    wget -q -O /tmp/config.json https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/config.json
+    wget -q -O /tmp/config.json "$repository_url"/config/config.json
 
     jq --arg address "$address" --arg port "$port" '.inbounds[1].port = ($port | tonumber) | .inbounds[1].settings.address = $address | .inbounds[1].settings.port = ($port | tonumber) | .inbounds[1].tag = "inbound-" + $port' /tmp/config.json > /usr/local/etc/xray/config.json
     clear

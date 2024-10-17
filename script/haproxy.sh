@@ -16,7 +16,7 @@ install_haproxy() {
         sudo $PACKAGE_MANAGER install haproxy -y > /dev/null 2>&1
         sleep 1
         echo "30" "Downloading haproxy.cfg..."
-        wget -q -O /tmp/haproxy.cfg "https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/haproxy.cfg" > /dev/null 2>&1
+        wget -q -O /tmp/haproxy.cfg "$repository_url"/config/haproxy.cfg > /dev/null 2>&1
         sleep 1
         echo "50" "Removing existing haproxy.cfg..."
         sudo rm /etc/haproxy/haproxy.cfg > /dev/null 2>&1
