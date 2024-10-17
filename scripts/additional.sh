@@ -8,7 +8,7 @@ configure_dns() {
 
     dns1=$(whiptail --inputbox "Enter DNS Server 1 (like 8.8.8.8):" 8 60 3>&1 1>&2 2>&3)
     exitstatus=$?
-    
+
     if [ $exitstatus != 0 ] || [ -z "$dns1" ]; then
         whiptail --title "DNS Configuration" --msgbox "Operation cancelled or invalid input. Restoring default DNS configuration." 8 60
         restore_dns
@@ -17,7 +17,7 @@ configure_dns() {
 
     dns2=$(whiptail --inputbox "Enter DNS Server 2 (like 8.8.4.4):" 8 60 3>&1 1>&2 2>&3)
     exitstatus=$?
-    
+
     if [ $exitstatus != 0 ] || [ -z "$dns2" ]; then
         whiptail --title "DNS Configuration" --msgbox "Operation cancelled or invalid input. Restoring default DNS configuration." 8 60
         restore_dns
@@ -57,17 +57,17 @@ function ping_websites() {
 
         (
             for _ in {1..5}; do
-                sleep 1  
+                sleep 1
                 ((gauge_percentage += 20))
                 echo "$gauge_percentage"
                 echo "# $gauge_title"
                 echo "Pinging $website..."
-                
+
                 if ping -c 1 $website &> /dev/null; then
                     success=true
                 fi
             done
-            echo "100" 
+            echo "100"
         ) | dialog --title "Ping $website" --gauge "$gauge_title" 10 80 0
 
         result=$(ping -c 5 $website | tail -n 2)
