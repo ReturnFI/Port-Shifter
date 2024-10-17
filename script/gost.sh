@@ -15,7 +15,7 @@ install_gost() {
         echo "10"
         curl -fsSL https://github.com/go-gost/gost/raw/master/install.sh | bash -s -- --install > /dev/null 2>&1
         echo "50"
-        sudo wget -q -O /usr/lib/systemd/system/gost.service https://raw.githubusercontent.com/ReturnFI/Port-Shifter/main/gost.service > /dev/null 2>&1
+        sudo wget -q -O /usr/lib/systemd/system/gost.service "$repository_url"/config/gost.service > /dev/null 2>&1
         sleep 1
         echo "70"
     } | dialog --title "GOST Installation" --gauge "Installing GOST..." 10 60
