@@ -150,3 +150,7 @@ The script provides a dialog-based interface for managing various services. Belo
 
 # Disclaimer
 This project is only for personal learning and communication, please do not use it for illegal purposes, please do not use it in a production environment
+
+
+
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
