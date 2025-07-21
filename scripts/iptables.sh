@@ -3,69 +3,100 @@
 source /opt/Port-Shifter/scripts/path.sh
 source /opt/Port-Shifter/scripts/package.sh
 
-install_iptables() {
-    IP=$(whiptail --inputbox "Enter your main server IP like (1.1.1.1):" 8 60 3>&1 1>&2 2>&3)
-    TCP_PORTS=$(whiptail --inputbox "Enter ports separated by commas (e.g., 80,443):" 8 60 80,443 3>&1 1>&2 2>&3)
+prompt_for_input() {
+    local prompt_message="$1"
+    local variable_name="$2"
+    echo -e -n "${YELLOW}$prompt_message ${NC}"
+    read -r "$variable_name"
+}
 
-    {
-        echo "10" "Installing iptables..."
-        sudo $PACKAGE_MANAGER install iptables -y > /dev/null 2>&1
-        echo "30" "Enabling net.ipv4.ip_forward..."
-        sudo sysctl net.ipv4.ip_forward=1 > /dev/null 2>&1
-        echo "50" "Configuring iptables rules for TCP..."
-        sudo iptables -t nat -A POSTROUTING -p tcp --match multiport --dports $TCP_PORTS -j MASQUERADE > /dev/null 2>&1
-        echo "60" "Configuring iptables rules for TCP DNAT..."
-        sudo iptables -t nat -A PREROUTING -p tcp --match multiport --dports $TCP_PORTS -j DNAT --to-destination $IP > /dev/null 2>&1
-        echo "75" "Configuring iptables rules for UDP..."
-        sudo iptables -t nat -A POSTROUTING -p udp --match multiport --dports $TCP_PORTS -j MASQUERADE > /dev/null 2>&1
-        echo "85" "Configuring iptables rules for UDP DNAT..."
-        sudo iptables -t nat -A PREROUTING -p udp --match multiport --dports $TCP_PORTS -j DNAT --to-destination $IP > /dev/null 2>&1
-        echo "95" "Creating /etc/iptables/..."
-        sudo mkdir -p /etc/iptables/ > /dev/null 2>&1
-        sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
-        echo "100" "Starting iptables service..."
-        sudo systemctl start iptables
-    } | dialog --title "IPTables Installation" --gauge "Installing IPTables..." 10 100 0
+confirm_action() {
+    local question="$1"
+    while true; do
+        read -r -p "$(echo -e "${YELLOW}$question (y/n): ${NC}")" choice
+        case "$choice" in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) show_message "error" "Invalid input. Please enter 'y' or 'n'." ;;
+        esac
+    done
+}
+
+pause_for_key() {
+    read -n 1 -s -r -p "Press any key to continue..."
+    echo
+}
+
+install_iptables() {
     clear
-    whiptail --title "IPTables Installation" --msgbox "IPTables installation completed." 8 60
+    show_message "info" "--- IPTables Tunnel Setup ---"
+
+    prompt_for_input "Enter the Main-Server IP to forward traffic to (e.g., 1.1.1.1): " IP
+    prompt_for_input "Enter ports to forward, separated by commas (e.g., 80,443): " PORTS
+
+    if [ -z "$IP" ] || [ -z "$PORTS" ]; then
+        show_message "error" "IP address and ports cannot be empty. Aborting."
+        pause_for_key
+        return
+    fi
+    
+    show_message "info" "Installing iptables-persistent package..."
+    if [ "$PACKAGE_MANAGER" = "apt" ]; then
+        sudo $PACKAGE_MANAGER install iptables-persistent -y > /dev/null 2>&1
+    else 
+        sudo $PACKAGE_MANAGER install iptables-services -y > /dev/null 2>&1
+    fi
+
+    show_message "info" "Enabling IP forwarding..."
+    sudo sysctl -w net.ipv4.ip_forward=1 > /dev/null 2>&1
+    echo "net.ipv4.ip_forward=1" | sudo tee /etc/sysctl.d/99-port-shifter.conf > /dev/null
+
+    show_message "info" "Configuring IPTables rules for ports: $PORTS..."
+    sudo iptables -t nat -A PREROUTING -p tcp -m multiport --dports "$PORTS" -j DNAT --to-destination "$IP"
+    sudo iptables -t nat -A PREROUTING -p udp -m multiport --dports "$PORTS" -j DNAT --to-destination "$IP"
+    sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+
+    show_message "info" "Saving rules..."
+    sudo mkdir -p /etc/iptables/
+    sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
+
+    show_message "success" "IPTables rules installed and saved successfully."
+    pause_for_key
 }
 
 check_port_iptables() {
-    ip_ports=$(iptables-save | awk '/-A (PREROUTING|POSTROUTING)/ && /-p tcp -m multiport --dports/ {split($0, parts, "--to-destination "); split(parts[2], dest_port, "[:]"); split(parts[1], src_port, " --dports "); split(src_port[2], port_list, ","); for (i in port_list) { if(dest_port[1] != "") { if (index(port_list[i], " ")) { split(port_list[i], split_port, " "); print dest_port[1], split_port[1] } else print dest_port[1], port_list[i] }}}'
-)
-    status=$(sudo systemctl is-active iptables)
-    service_status="iptables Service Status: $status"
-    info="Service Status and Ports in Use:\n$ip_ports\n\n$service_status"
-    whiptail --title "iptables Service Status and Ports" --msgbox "$info" 15 70
+    clear
+    show_message "info" "--- Current IPTables NAT Rules ---"
+    sudo iptables -t nat -L PREROUTING -n -v
+    echo ""
+    sudo iptables -t nat -L POSTROUTING -n -v
+    show_message "info" "----------------------------------"
+    ip_forward_status=$(cat /proc/sys/net/ipv4/ip_forward)
+    if [ "$ip_forward_status" -eq 1 ]; then
+        show_message "success" "IP Forwarding is ENABLED."
+    else
+        show_message "warning" "IP Forwarding is DISABLED."
+    fi
+    pause_for_key
 }
 
 uninstall_iptables() {
-    if whiptail --title "Confirm Uninstallation" --yesno "Are you sure you want to uninstall IPTables?" 8 60; then
-        {
-            echo "10" ; echo "Flushing iptables rules..."
-            sudo iptables -F > /dev/null 2>&1
-            sleep 1
-            echo "20" ; echo "Deleting all user-defined chains..."
-            sudo iptables -X > /dev/null 2>&1
-            sleep 1
-            echo "40" ; echo "Flushing NAT table..."
-            sudo iptables -t nat -F > /dev/null 2>&1
-            sleep 1
-            echo "50" ; echo "Deleting user-defined chains in NAT table..."
-            sudo iptables -t nat -X > /dev/null 2>&1
-            sleep 1
-            echo "70" ; echo "Removing /etc/iptables/rules.v4..."
-            sudo rm /etc/iptables/rules.v4 > /dev/null 2>&1
-            sleep 1
-            echo "80" ; echo "Stopping iptables service..."
-            sudo systemctl stop iptables > /dev/null 2>&1
-            sleep 1
-            echo "100" ; echo "IPTables Uninstallation completed!"
-        } | whiptail --gauge "Uninstalling IPTables..." 10 70 0
-        clear
-        whiptail --title "IPTables Uninstallation" --msgbox "IPTables Uninstalled." 8 60
+    clear
+    if confirm_action "Are you sure you want to flush all IPTables NAT rules?"; then
+        show_message "info" "Flushing NAT table rules..."
+        sudo iptables -t nat -F PREROUTING
+        sudo iptables -t nat -F POSTROUTING
+        
+        show_message "info" "Disabling IP forwarding..."
+        sudo sysctl -w net.ipv4.ip_forward=0 > /dev/null 2>&1
+        sudo rm -f /etc/sysctl.d/99-port-shifter.conf
+
+        show_message "info" "Saving empty ruleset..."
+        sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
+        
+        show_message "success" "IPTables forwarding rules have been removed."
     else
-        whiptail --title "IPTables Uninstallation" --msgbox "Uninstallation cancelled." 8 60
-        clear
+        show_message "info" "Uninstallation cancelled."
     fi
+    pause_for_key
 }

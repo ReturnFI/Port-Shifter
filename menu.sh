@@ -1,240 +1,177 @@
 #!/bin/bash
 
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root or with sudo."
+  exit
+fi
+
 for script in /opt/Port-Shifter/scripts/*.sh; do
   source "$script"
 done
 
+prompt_for_input() {
+    local prompt_message="$1"
+    local variable_name="$2"
+    echo -e -n "${YELLOW}$prompt_message ${NC}"
+    read -r "$variable_name"
+}
+
 iptables_menu() {
     while true; do
-        choice=$(whiptail --backtitle "Port-Shifter" --title "IP-Tables Menu" --menu "Please choose one of the following options:" 20 60 10 \
-        "Install" "Install IP-Tables Rules" \
-        "Status" "Check Ports In Use" \
-        "Uninstall" "Uninstall IP-Tables Rules" \
-        "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "================== IP-Tables Menu =================="
+        echo " 1. Install IP-Tables Rules"
+        echo " 2. Check Ports In Use (Status)"
+        echo " 3. Uninstall IP-Tables Rules"
+        echo " b. Back to Main Menu"
+        echo " q. Quit"
+        show_message "info" "===================================================="
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $choice in
-                Install)
-                    install_iptables
-                    ;;
-                Status)
-                    check_port_iptables
-                    ;;
-                Uninstall)
-                    uninstall_iptables
-                    ;;
-                Back)
-                    menu
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    exit 1
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) install_iptables ;;
+            2) check_port_iptables ;;
+            3) uninstall_iptables ;;
+            b|B) break ;;
+            q|Q) exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
 gost_menu() {
     while true; do
-        choice=$(whiptail --backtitle "Port-Shifter" --title "GOST Menu" --menu "Please choose one of the following options:" 20 60 10 \
-        "Install" "Install GOST" \
-        "Status" "Check GOST Port And Status" \
-        "Add" "Add Another Port And Domain" \
-        "Remove" "Remove Port And Domain" \
-        "Uninstall" "Uninstall GOST" \
-        "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "==================== GOST Menu ====================="
+        echo " 1. Install GOST"
+        echo " 2. Check GOST Status & Ports"
+        echo " 3. Add Port & Domain"
+        echo " 4. Remove Port & Domain"
+        echo " 5. Uninstall GOST"
+        echo " b. Back to Main Menu"
+        echo " q. Quit"
+        show_message "info" "===================================================="
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $choice in
-                Install)
-                    install_gost
-                    ;;
-                Status)
-                    check_port_gost
-                    ;;
-                Add)
-                    add_port_gost
-                    ;;
-                Remove)
-                    remove_port_gost
-                    ;;
-                Uninstall)
-                    uninstall_gost
-                    ;;
-                Back)
-                    menu
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    exit 1
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) install_gost ;;
+            2) check_port_gost ;;
+            3) add_port_gost ;;
+            4) remove_port_gost ;;
+            5) uninstall_gost ;;
+            b|B) break ;;
+            q|Q) exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
 dokodemo_menu() {
     while true; do
-        choice=$(whiptail --backtitle "Port-Shifter" --title "Dokodemo-Door Menu" --menu "Please choose one of the following options:" 20 60 10 \
-        "Install" "Install Xray For Dokodemo-Door And Add Inbound" \
-        "Status" "Check Xray Service Status" \
-        "Traffic" "Inbound Traffic Statistics" \
-        "Add" "Add Another Inbound" \
-        "Remove" "Remove an Inbound Configuration" \
-        "Uninstall" "Uninstall Xray And Tunnel" \
-        "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "================ Dokodemo-Door Menu ================"
+        echo " 1. Install Xray (Dokodemo-Door)"
+        echo " 2. Check Xray Service Status"
+        echo " 3. View Inbound Traffic Statistics"
+        echo " 4. Add Another Inbound"
+        echo " 5. Remove an Inbound"
+        echo " 6. Uninstall Xray"
+        echo " b. Back to Main Menu"
+        echo " q. Quit"
+        show_message "info" "===================================================="
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $choice in
-                Install)
-                    install_xray
-                    ;;
-                Status)
-                    check_service_xray
-                    ;;
-                Traffic)
-                    trafficstat
-                     ;;
-                Add)
-                    add_another_inbound
-                    ;;
-                Remove)
-                    remove_inbound
-                    ;;
-                Uninstall)
-                    uninstall_xray
-                    ;;
-                Back)
-                    menu
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    exit 1
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) install_xray ;;
+            2) check_service_xray ;;
+            3) trafficstat ;;
+            4) add_another_inbound ;;
+            5) remove_inbound ;;
+            6) uninstall_xray ;;
+            b|B) break ;;
+            q|Q) exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
 haproxy_menu() {
     while true; do
-        choice=$(whiptail --backtitle "Port-Shifter" --title "HA-Proxy Menu" --menu "Please choose one of the following options:" 20 60 10 \
-        "Install" "Install HA-Proxy" \
-        "Status" "Check HA-Proxy Port and Status" \
-        "Add" "Add more tunnel Configuration" \
-        "Remove" "Remove tunnel Configuration" \
-        "Uninstall" "Uninstall HAProxy" \
-        "Back" "Back To Main Menu" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "=================== HAProxy Menu ==================="
+        echo " 1. Install HAProxy"
+        echo " 2. Check HAProxy Status & Port"
+        echo " 3. Add Tunnel Configuration"
+        echo " 4. Remove Tunnel Configuration"
+        echo " 5. Uninstall HAProxy"
+        echo " b. Back to Main Menu"
+        echo " q. Quit"
+        show_message "info" "===================================================="
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $choice in
-                Install)
-                    install_haproxy
-                    ;;
-                Status)
-                    check_haproxy
-                    ;;
-                Add)
-                    add_frontend_backend
-                    ;;
-                Remove)
-                    remove_frontend_backend
-                    ;;
-                Uninstall)
-                    uninstall_haproxy
-                    ;;
-                Back)
-                    menu
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    exit 1
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) install_haproxy ;;
+            2) check_haproxy ;;
+            3) add_frontend_backend ;;
+            4) remove_frontend_backend ;;
+            5) uninstall_haproxy ;;
+            b|B) break ;;
+            q|Q) exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
-function other_options_menu() {
+other_options_menu() {
     while true; do
-        other_choice=$(whiptail --backtitle "Welcome to Port-Shifter" --title "Other Options" --menu "Please choose one of the following options:" 20 60 10 \
-        "DNS" "Configure DNS" \
-        "Update" "Update Server" \
-        "Ping" "Ping to check internet connectivity" \
-        "Back" "Return to Main Menu" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "================ Other Options Menu ================"
+        echo " 1. Configure DNS"
+        echo " 2. Update Server Packages"
+        echo " 3. Ping Test"
+        echo " b. Back to Main Menu"
+        echo " q. Quit"
+        show_message "info" "===================================================="
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $other_choice in
-                DNS)
-                    configure_dns
-                    ;;
-                Update)
-                    update_server
-                    ;;
-                Ping)
-                    ping_websites
-                    ;;
-                Back)
-                    menu
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) configure_dns ;;
+            2) update_server ;;
+            3) ping_websites ;;
+            b|B) break ;;
+            q|Q) exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
-function menu() {
+# --- Main Menu ---
+main_menu() {
     while true; do
-        choice=$(whiptail --backtitle "Welcome to Port-Shifter" --title "Choose Your Tunnel Mode" --menu "Please choose one of the following options:" 20 60 10 \
-        "IP-Tables" "Manage IP-Tables Tunnel" \
-        "GOST" "Manage GOST Tunnel" \
-        "Dokodemo-Door" "Manage Dokodemo-Door Tunnel" \
-        "HA-Proxy" "Manage HA-Proxy Tunnel" \
-        "Options" "Additional Configuration Options" \
-        "Quit" "Exit From The Script" 3>&1 1>&2 2>&3)
+        clear
+        show_message "info" "=============== Port-Shifter Main Menu ==============="
+        show_message "info" "        Choose your tunnel mode or option"
+        show_message "info" "========================================================"
+        echo " 1. IP-Tables Tunnel"
+        echo " 2. GOST Tunnel"
+        echo " 3. Dokodemo-Door (Xray) Tunnel"
+        echo " 4. HA-Proxy Tunnel"
+        echo " 5. Other Options"
+        echo " q. Quit"
+        show_message "info" "========================================================"
+        prompt_for_input "Enter your choice:" choice
 
-        if [ $? -eq 0 ]; then
-            case $choice in
-                IP-Tables)
-                    iptables_menu
-                    ;;
-                GOST)
-                    gost_menu
-                    ;;
-                Dokodemo-Door)
-                    dokodemo_menu
-                    ;;
-                HA-Proxy)
-                    haproxy_menu
-                    ;;
-                Options)
-                    other_options_menu
-                    ;;
-                Quit)
-                    exit 0
-                    ;;
-                *)
-                    whiptail --title "Invalid Option" --msgbox "Please select a valid option." 8 60
-                    exit 1
-                    ;;
-            esac
-        else
-            exit 1
-        fi
+        case $choice in
+            1) iptables_menu ;;
+            2) gost_menu ;;
+            3) dokodemo_menu ;;
+            4) haproxy_menu ;;
+            5) other_options_menu ;;
+            q|Q) clear; show_message "info" "Exiting Port-Shifter. Goodbye!"; exit 0 ;;
+            *) show_message "error" "Invalid option, please try again." && sleep 2 ;;
+        esac
     done
 }
 
-menu
+# Start the main menu
+main_menu
